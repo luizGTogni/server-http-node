@@ -1,23 +1,26 @@
 import http from "node:http";
+import { json } from "./middlewares/json.js";
 
-users = [];
+const users = [];
 
-const server = http.createServer((req, res) => {
-    const { method, url } = req;
+const server = http.createServer(async (req, res) => {
+    await json(req, res)
 
-    if (method === "POST" && url === "/users") {
-        user = { id: 1, name: "Luiz Togni", email: "trueluizbr@gmail.com" };
+    const { method, url, body } = req;
 
-        users.push(user)
-
-        res.writeHead(201).end();
+    if (method === "GET" && url === "/users") {
+        return res.writeHead(200).end(JSON.stringify(users));
     }
 
     if (method === "POST" && url === "/users") {
-        res.writeHead(201).end();
+        const user = { id: users.length + 1, name: body["name"], email: body["email"] };
+
+        users.push(user);
+
+        return res.writeHead(201).end();
     }
 
-    res.writeHead(404).end(JSON.stringify({ "error": "route not found" }));
+    return res.writeHead(404).end(JSON.stringify({ "error": "route not found" }));
 });
 
 server.listen(3000, () => console.log("Server is running..."));
