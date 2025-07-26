@@ -34,6 +34,14 @@ export class Database {
     return data;
   }
 
+  selectById(table, id) {
+    if (Array.isArray(this.#database[table])) {
+      const rowIndex = this.#database[table].findIndex((row) => row.id === id);
+      const data = this.#database[table][rowIndex];
+      return data;
+    }
+  }
+
   insert(table, data) {
     const id = randomUUID();
 
